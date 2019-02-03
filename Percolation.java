@@ -29,7 +29,7 @@ public class Percolation {
     public void open(int row, int col) {
         assertInRange(row, col);
         openSite(row, col);
-        connectToVirtualTopNode(row, col);
+        connectToSourceNode(row, col);
     }
 
     private void assertInRange(int row, int col) {
@@ -51,13 +51,59 @@ public class Percolation {
         backwash.union(row, col);
     }
 
-    private void connectToVirtualTopNode(int row, int col) {
-        if (row == 1) {
-            union(TOP_INDEX, toIndex(row, col));
+
+    private void connectToSourceNode(int row, int col) {
+        union(TOP_INDEX, toIndex(row, col));
+    }
+
+    private void connectToAdjacents(int row, int col) {
+        connectTopNode(row, col);
+        connectBottomNode(row, col);
+        connectLeftNode(row, col);
+        connectRightNode(row, col);
+    }
+
+    private void connectTopNode(int row, int col) {
+        if (row > 1 && isOpen(row - 1, col)) {
+            union(toIndex(row - 1, col), toIndex(row, col));
         }
     }
 
-    public static void main(String[] args) {
+    private void connectBottomNode(int row, int col) {
+        if (row < SIZE && isOpen(row + 1, col)) {
+            union(toIndex(row + 1, col), toIndex(row, col));
+        }
+    }
 
+    private void connectLeftNode(int row, int col) {
+        if (row > 1 && isOpen(row, col - 1)) {
+            union(toIndex(row, col - 1), toIndex(row, col));
+        }
+    }
+
+    private void connectRightNode(int row, int col) {
+        if (row < SIZE && isOpen(row, col + 1)) {
+            union(toIndex(row, col + 1), toIndex(row, col));
+        }
+    }
+
+    private void connectSinkNode(int row, int col) {
+        if (row == SIZE) {
+            backwash.union(BOTTOM_INDEX, toIndex(row, col));
+        }
+    }
+
+    public boolean isOpen(int row, int col) {
+        assertInRange(row, col);
+        return openSites[toIndex(row, col)];
+    }
+
+    public boolean isFull(int row, int col) {
+        assertInRange(row, col);
+        return union.connected(toIndex(row, col), TOP_INDEX);
+    }
+
+    public boolean percolates() {
+        return backwash.connected(BOTTOM_INDEX, TOP_INDEX);
     }
 }
