@@ -30,6 +30,8 @@ public class Percolation {
         assertInRange(row, col);
         openSite(row, col);
         connectToSourceNode(row, col);
+        connectToAdjacents(row, col);
+        connectSinkNode(row, col);
     }
 
     private void assertInRange(int row, int col) {
